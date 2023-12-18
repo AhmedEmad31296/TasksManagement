@@ -117,35 +117,27 @@
     function create() {
         var _$form = $('form[name="taskCreateForm"]');
         abp.ui.setBusy(_$form);
+        // Serialize the form data as an object
+        var formData = _$form.serializeArray().reduce(function (obj, item) {
+            obj[item.name] = item.value;
+            return obj;
+        }, {});
 
-        // Serialize the form data as an array
-        var formData = _$form.serializeArray();
-
-        // Find and format entryDate
-        var entryDate = formData.find(x => x.name === 'entryDate');
-        if (entryDate && entryDate.value) {
-            var parsedDate = new Date(entryDate.value);
-            entryDate.value = parsedDate.toISOString();
+        // Format entryDate
+        if (formData.entryDate) {
+            formData.entryDate = new Date(formData.entryDate).toISOString();
         }
 
-        // Find and format deadLine
-        var deadLine = formData.find(x => x.name === 'deadLine');
-        if (deadLine && deadLine.value) {
-            var parsedDate = new Date(deadLine.value);
-            deadLine.value = parsedDate.toISOString();
+        // Format deadLine
+        if (formData.deadLine) {
+            formData.deadLine = new Date(formData.deadLine).toISOString();
         }
-
-        // Convert the form data array to an object
-        var jsonData = {};
-        formData.forEach(item => {
-            jsonData[item.name] = item.value;
-        });
 
         $.ajax({
             type: "POST",
             url: "@Url.Action("Create", "DailyTask")",
             contentType: "application/json",
-            data: JSON.stringify(jsonData),
+            data: JSON.stringify(formData),
             success: function (res) {
                 abp.ui.clearBusy(_$form);
                 toastr.success(res.result, '@L("Success")');
@@ -162,34 +154,27 @@
         var _$form = $('form[name="taskEditForm"]');
         abp.ui.setBusy(_$form);
 
-        // Serialize the form data as an array
-        var formData = _$form.serializeArray();
+        // Serialize the form data as an object
+        var formData = _$form.serializeArray().reduce(function (obj, item) {
+            obj[item.name] = item.value;
+            return obj;
+        }, {});
 
-        // Find and format entryDate
-        var entryDate = formData.find(x => x.name === 'entryDate');
-        if (entryDate && entryDate.value) {
-            var parsedDate = new Date(entryDate.value);
-            entryDate.value = parsedDate.toISOString();
+        // Format entryDate
+        if (formData.entryDate) {
+            formData.entryDate = new Date(formData.entryDate).toISOString();
         }
 
-        // Find and format deadLine
-        var deadLine = formData.find(x => x.name === 'deadLine');
-        if (deadLine && deadLine.value) {
-            var parsedDate = new Date(deadLine.value);
-            deadLine.value = parsedDate.toISOString();
+        // Format deadLine
+        if (formData.deadLine) {
+            formData.deadLine = new Date(formData.deadLine).toISOString();
         }
-
-        // Convert the form data array to an object
-        var jsonData = {};
-        formData.forEach(item => {
-            jsonData[item.name] = item.value;
-        });
 
         $.ajax({
             type: "POST",
             url: "@Url.Action("Update", "DailyTask")",
             contentType: "application/json",
-            data: JSON.stringify(jsonData), // Convert to JSON object
+            data: JSON.stringify(formData), // Convert to JSON object
             success: function (res) {
                 abp.ui.clearBusy(_$form);
                 toastr.success(res.result, '@L("Success")');

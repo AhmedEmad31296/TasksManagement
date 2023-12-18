@@ -68,7 +68,7 @@ namespace TasksManagement.Web.Controllers
             var employees = await _IUserAppService.GetEmployees();
             ViewData["Employees"] = new SelectList(employees, "Id", "Name", result.EmployeeId);
             return PartialView("_EditModal", result);
-        } 
+        }
         [HttpGet]
         public async Task<ActionResult> GetEmployeeAttachments(int id)
         {
@@ -81,12 +81,12 @@ namespace TasksManagement.Web.Controllers
             return PartialView("_SetCompleteModal", id);
         }
         [HttpPost]
-        public async Task<JsonResult> Create(InsertDailyTaskInput input)
+        public async Task<JsonResult> Create([FromBody] InsertDailyTaskInput input)
         {
             return Json(await _IDailyTaskAppService.Insert(input));
         }
         [HttpPost]
-        public async Task<JsonResult> Update(UpdateDailyTaskInput input)
+        public async Task<JsonResult> Update([FromBody] UpdateDailyTaskInput input)
         {
             return Json(await _IDailyTaskAppService.Update(input));
         }
