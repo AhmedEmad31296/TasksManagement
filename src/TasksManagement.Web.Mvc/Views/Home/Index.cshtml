@@ -1,0 +1,72 @@
+﻿@using TasksManagement.Common;
+@using TasksManagement.DailyTasks.Dto;
+
+@model GetStatisticsDto;
+
+<div class="row">
+    <div class="col-xl-3 col-lg-6 col-md-6 col-12">
+        <div class="card gradient-mint">
+            <div class="card-content">
+                <div class="card-body py-0">
+                    <div class="media pb-1">
+                        <div class="media-body white text-left">
+                            <h3 class="font-large-1 white mb-0">@Model.TaskStatusStatistics.Sum(x=>x.Total)</h3>
+                            <span>@(L("DailyTask.Total"))</span>
+                        </div>
+                        <div class="media-right white text-right">
+                            <i class="ft-activity font-large-1"></i>
+                        </div>
+                    </div>
+                </div>
+                <div id="Widget-line-chart" class="height-75 WidgetlineChart WidgetlineChartshadow mb-2">
+                </div>
+            </div>
+        </div>
+    </div>
+    @foreach (var item in Model.TaskStatusStatistics)
+    {
+        <div class="col-xl-3 col-lg-6 col-md-6 col-12">
+            <div class="card gradient-mint">
+                <div class="card-content">
+                    <div class="card-body py-0">
+                        <div class="media pb-1">
+                            <div class="media-body white text-left">
+                                <h3 class="font-large-1 white mb-0">@item.Total</h3>
+                                <span>@(L("DailyTask." + item.TaskStatus.ToString()))</span>
+                            </div>
+                            <div class="media-right white text-right">
+                                <i class="ft-activity font-large-1"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="Widget-line-chart" class="height-75 WidgetlineChart WidgetlineChartshadow mb-2">
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+<div class="row match-height">
+    <div class="col-xl-12 col-12">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="card-title">@L("DailyTask.TaskStatus")</h4>
+            </div>
+            <div class="card-content">
+                <div class="card-body">
+                    <div class="row">
+                        @foreach (var item in Model.TaskStatusStatistics)
+                        {
+                            <div class="col-4 mb-5">
+                                <span class="mb-1 text-muted d-block">@Math.Round(item.Percentage, 2)% - @(L("DailyTask." + item.TaskStatus.ToString()))</span>
+                                <div class="progress" style="height: 5px;">
+                                    <div class="progress-bar bg-info" role="progressbar" style="width: @((int)item.Percentage)%;" aria-valuenow="@((int)item.Percentage)" aria-valuemin="0" aria-valuemax="100"></div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

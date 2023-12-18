@@ -1,0 +1,71 @@
+﻿@using TasksManagement.DailyTasks;
+@inject IDailyTaskAppService _dailyTaskAppService
+@{
+    var isCurrentUserAdmin = await _dailyTaskAppService.IsCurrentUserAdmin();
+}
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between">
+                <h4 class="card-title">
+                    @L("DailyTask.Title")
+                </h4>
+                @if (isCurrentUserAdmin)
+                {
+                    <a href="javascript:;" data-toggle="modal" data-target="#TaskCreateModal" class="btn btn-success bg-light-success mb-1">
+                        <i class="fa fa-plus-square"></i>
+                        @L("Datatable.Create")
+                    </a>
+                }
+            </div>
+            <div class="card-content">
+                <div class="card-body">
+                    <table id="tblTasks" class="table table-sm table-striped table-bordered flex-sm-nowrap">
+                        <thead>
+                            <tr>
+                                <th>@L("Name")</th>
+                                <th>@L("Comment")</th>
+                                <th>@L("DailyTask.EntryDate")</th>
+                                <th>@L("DailyTask.DeadLine")</th>
+                                <th>@L("DailyTask.DaysLeft")</th>
+                                <th>@L("DailyTask.TaskStatus")</th>
+                                <th>@L("DailyTask.EmployeeName")</th>
+                                <th>@L("Actions")</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@await Html.PartialAsync("~/Views/DailyTask/_CreateModal.cshtml")
+
+
+<div class="modal fade text-left" id="TaskEditModal" tabindex="-1" role="dialog" aria-labelledby="TaskEditModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+        </div>
+    </div>
+</div>
+
+<div class="modal fade text-left" id="TaskCompleteModal" tabindex="-1" role="dialog" aria-labelledby="TaskCompleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+        </div>
+    </div>
+</div>
+
+<div class="modal fade text-left" id="EmployeeAttachmentsModal" tabindex="-1" role="dialog" aria-labelledby="EmployeeAttachmentsModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+        </div>
+    </div>
+</div>
+@section scripts
+    {
+    <partial name="_Script" />
+    }

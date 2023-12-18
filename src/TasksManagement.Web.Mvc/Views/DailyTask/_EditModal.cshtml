@@ -1,0 +1,56 @@
+﻿@using TasksManagement.DailyTasks.Dto;
+@model GetFullInfoDailyTaskDto
+
+<div class="modal-header">
+    <h6 class="modal-title" id="myModalLabel35">@L("DailyTask.Edit") </h6>
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+        <span aria-hidden="true"><i class="ft-x font-medium-2 text-bold-700"></i></span>
+    </button>
+</div>
+<form name="taskEditForm" role="form" class="form-horizontal" onsubmit="update()">
+    <div class="modal-body">
+        <input type="hidden" name="Id" value="@Model.Id" />
+        <fieldset class="form-group floating-label-form-group">
+            <label for="name">@L("Name")</label>
+            <input type="text" class="form-control" id="name" name="name" placeholder="@L("Name")" value="@Model.Name" required minlength="2">
+        </fieldset>
+        <fieldset class="form-group floating-label-form-group">
+            <label for="comment">@L("Comment")</label>
+            <textarea class="form-control" id="comment" name="comment" placeholder="@L("Comment")">@Model.Comment</textarea>
+        </fieldset>
+        <br>
+        <fieldset class="form-group floating-label-form-group">
+            <label for="employee">@L("DailyTask.EmployeeName")</label>
+            <div class="form-group">
+                <select class="form-control" id="employee" name="employeeId" asp-for="EmployeeId" asp-items="@(ViewData["Employees"] as SelectList)" required>
+                </select>
+            </div>
+        </fieldset>
+        <fieldset class="form-group floating-label-form-group">
+            <label>@L("DailyTask.EntryDate")</label>
+            <div class="input-group">
+                <div class="input-group-prepend">
+                    <span class="input-group-text">
+                        <span class="ft-calendar font-medium-2"></span>
+                    </span>
+                </div>
+                <input type="date" class="form-control" name="entryDate" id="entryDate" asp-for="EntryDate" placeholder="@L("PickDate")" required>
+            </div>
+        </fieldset>
+        <fieldset class="form-group floating-label-form-group">
+            <label>@L("DailyTask.DeadLine")</label>
+            <div class="input-group">
+                <div class="input-group-prepend">
+                    <span class="input-group-text">
+                        <span class="ft-calendar font-medium-2"></span>
+                    </span>
+                </div>
+                <input type="date" class="form-control" name="deadLine" id="deadLine" asp-for="DeadLine" placeholder="@L("PickDate")" required>
+            </div>
+        </fieldset>
+    </div>
+    <div class="modal-footer">
+        <button type="submit" class="btn bg-light-success">@L("Save")</button>
+        <button type="reset" class="btn bg-light-secondary" data-dismiss="modal">@L("Cancel")</button>
+    </div>
+</form>

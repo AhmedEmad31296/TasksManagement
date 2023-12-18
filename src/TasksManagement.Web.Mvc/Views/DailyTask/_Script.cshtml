@@ -1,0 +1,300 @@
+﻿@using TasksManagement.Common;
+@using TasksManagement.DailyTasks;
+@inject IDailyTaskAppService _dailyTaskAppService
+@{
+    var isCurrentUserAdmin = await _dailyTaskAppService.IsCurrentUserAdmin();
+}
+<script>
+    $(document).ready(function () {
+        getAll();
+    });
+    var dt = null;
+    function getAll() {
+        if (dt == null)
+            dt = $('#tblTasks').DataTable({
+                "serverSide": true,
+                "filter": true,
+                "ordering": true,
+                "processing": true,
+                "language": {
+                    "sProcessing": "جارٍ التحميل...",
+                    "sLengthMenu": "أظهر _MENU_ مدخلات",
+                    "sZeroRecords": "لم يعثر على أية سجلات",
+                    "sInfo": "إظهار _START_ إلى _END_ من أصل _TOTAL_ مدخل",
+                    "sInfoEmpty": "يعرض 0 إلى 0 من أصل 0 سجل",
+                    "sInfoFiltered": "(منتقاة من مجموع _MAX_ مُدخل)",
+                    "sInfoPostFix": "",
+                    "sSearch": "ابحث: ",
+                    "sUrl": "",
+                    "oPaginate": {
+                        "sFirst": "الأول",
+                        "sPrevious": "السابق",
+                        "sNext": "التالي",
+                        "sLast": "الأخير"
+                    }
+                },
+                "ajax": {
+                    "url": "@Url.Action("GetPaged","DailyTask")",
+                    "type": "POST",
+                    "dataType": "json",
+                    "data": {},
+                },
+                "columns": [
+                    { "data": "name", "name": "Name", "autoWidth": true, },
+                    { "data": "comment", "name": "Comment", "autoWidth": true },
+                    {
+                        "data": "entryDate",
+                        "name": "EntryDate",
+                        "autoWidth": true,
+                        "render": function (data, type, row) {
+                            if (data) {
+                                var entryDate = new Date(data);
+                                var options = { year: 'numeric', month: 'long', day: 'numeric' };
+                                var formattedDate = entryDate.toLocaleDateString('ar-eg', options);
+                                return formattedDate;
+                            }
+                            return data;
+                        }
+                    },
+                    {
+                        "data": "deadLine",
+                        "name": "DeadLine",
+                        "autoWidth": true,
+                        "render": function (data, type, row) {
+                            if (data) {
+                                var deadLine = new Date(data);
+                                var options = { year: 'numeric', month: 'long', day: 'numeric' };
+                                var formattedDate = deadLine.toLocaleDateString('ar-eg', options);
+                                return formattedDate;
+                            }
+                            return data;
+                        }
+                    },
+                    { "data": "daysLeft", "name": "DaysLeft", "autoWidth": true },
+                    {
+                        "data": "taskStatus",
+                        "name": "TaskStatus",
+                        "autoWidth": true,
+                        "render": function (data, type, row) {
+                            if (data >= 0) {
+                                switch (data) {
+                                    case 0:
+                                        return '<span class="badge bg-light-danger mb-1 mr-2">@L("DailyTask."+nameof(DailyTaskStatus.InProgress))</span>';
+                                    case 1:
+                                        return '<span class="badge bg-light-warning mb-1 mr-2">@L("DailyTask."+nameof(DailyTaskStatus.NotStarted))</span>';
+                                    case 2:
+                                        return '<span class="badge bg-light-success mb-1 mr-2">@L("DailyTask."+nameof(DailyTaskStatus.Completed))</span>';
+                                    default:
+                                        return '';
+                                }
+                            }
+                            return data;
+                        }
+                    },
+                    { "data": "employeeName", "name": "EmployeeName", "autoWidth": true },
+                    {
+                        "render": function (data, type, row) {
+                            var deleteBtn = '', editBtn = '', completeBtn = '', completedNoteAttachmentsBtn = '';
+                            if ('@isCurrentUserAdmin' == 'True') {
+                                editBtn = '<a href="#" class="success" onclick="editItem(' + row.id + ')"><i class="ft-edit font-medium-3"></i></a>';
+                                deleteBtn = '<a href="#" class="danger" onclick="deleteItem(' + row.id + ')"><i class="ft-trash font-medium-3"></i></a>'
+                            } else {
+                                completeBtn = row.taskStatus == 0 ? '<a href="#" class="warning" onclick="openTaskCompleteModal(' + row.id + ')"><span class="badge badge-info mb-1 mr-2"><i class="ft-check-circle"></i></span></a>' : '';
+                            }
+                            completedNoteAttachmentsBtn = row.hasUpdatedDailyTask == true ? '<a href="#" class="danger" onclick="getEmployeeAttachments(' + row.id + ')"><i class="fa fa-paperclip font-medium-3"></i></a>' : '';
+                            return deleteBtn + ' ' + editBtn + ' ' + completeBtn + ' ' + completedNoteAttachmentsBtn;
+                        },
+                        "orderable": false,
+                    }
+                ],
+            });
+        else
+            dt.ajax.reload(null, false);
+
+    }
+
+
+    function create() {
+        var _$form = $('form[name="taskCreateForm"]');
+        abp.ui.setBusy(_$form);
+
+        // Serialize the form data as an array
+        var formData = _$form.serializeArray();
+
+        // Find and format entryDate
+        var entryDate = formData.find(x => x.name === 'entryDate');
+        if (entryDate && entryDate.value) {
+            var parsedDate = new Date(entryDate.value);
+            entryDate.value = parsedDate.toISOString();
+        }
+
+        // Find and format deadLine
+        var deadLine = formData.find(x => x.name === 'deadLine');
+        if (deadLine && deadLine.value) {
+            var parsedDate = new Date(deadLine.value);
+            deadLine.value = parsedDate.toISOString();
+        }
+
+        // Convert the form data array to an object
+        var jsonData = {};
+        formData.forEach(item => {
+            jsonData[item.name] = item.value;
+        });
+
+        $.ajax({
+            type: "POST",
+            url: "@Url.Action("Create", "DailyTask")",
+            contentType: "application/json",
+            data: JSON.stringify(jsonData),
+            success: function (res) {
+                abp.ui.clearBusy(_$form);
+                toastr.success(res.result, '@L("Success")');
+                $('#TaskCreateModal').modal('hide');
+                getAll();
+            },
+            error: function (res) {
+                toastr.error(res.responseJSON.error.message, '@L("Error")');
+            }
+        });
+    }
+
+    function update() {
+        var _$form = $('form[name="taskEditForm"]');
+        abp.ui.setBusy(_$form);
+
+        // Serialize the form data as an array
+        var formData = _$form.serializeArray();
+
+        // Find and format entryDate
+        var entryDate = formData.find(x => x.name === 'entryDate');
+        if (entryDate && entryDate.value) {
+            var parsedDate = new Date(entryDate.value);
+            entryDate.value = parsedDate.toISOString();
+        }
+
+        // Find and format deadLine
+        var deadLine = formData.find(x => x.name === 'deadLine');
+        if (deadLine && deadLine.value) {
+            var parsedDate = new Date(deadLine.value);
+            deadLine.value = parsedDate.toISOString();
+        }
+
+        // Convert the form data array to an object
+        var jsonData = {};
+        formData.forEach(item => {
+            jsonData[item.name] = item.value;
+        });
+
+        $.ajax({
+            type: "POST",
+            url: "@Url.Action("Update", "DailyTask")",
+            contentType: "application/json",
+            data: JSON.stringify(jsonData), // Convert to JSON object
+            success: function (res) {
+                abp.ui.clearBusy(_$form);
+                toastr.success(res.result, '@L("Success")');
+                $('#TaskEditModal').modal('hide');
+                getAll();
+            },
+            error: function (res) {
+                toastr.error(res.responseJSON.error.message, '@L("Error")');
+            }
+        });
+    }
+
+    function deleteItem(id) {
+        Swal.fire({
+            title: '@L("ConfirmDeletion")',
+            text: '@L("AreYouSureDelete")',
+            showCancelButton: true,
+            confirmButtonText: '@L("YesDeleteIt")',
+            cancelButtonText: '@L("Cancel")',
+            onOpen: (popup) => {
+                popup.querySelector('.swal2-warning').style.display = 'flex';
+            }
+        }).then((result) => {
+            if (result.value) {
+                $.ajax({
+                    url: "@Url.Action("Delete","DailyTask")",
+                    type: "POST",
+                    data: { id: id },
+                    success: function (res) {
+                        getAll();
+                        toastr.success(res.result, '@L("Success")');
+                    },
+                    error: function (res) {
+                        toastr.error(res.responseJSON.error.message, '@L("Error")');
+                    }
+                });
+            }
+        });
+    }
+
+    function editItem(id) {
+        $.ajax({
+            type: 'GET',
+            url: "@Url.Action("EditModal","DailyTask")" + "/" + id,
+            success: function (data) {
+                $('#TaskEditModal .modal-content').html(data);
+                $('#TaskEditModal').modal('show');
+            },
+            error: function (res) {
+                toastr.error(res.responseJSON.error.message, '@L("Error")');
+            }
+        });
+    }
+
+    function getEmployeeAttachments(id) {
+        $.ajax({
+            type: 'GET',
+            url: "@Url.Action("GetEmployeeAttachments","DailyTask")" + "/" + id,
+            success: function (data) {
+                $('#EmployeeAttachmentsModal .modal-content').html(data);
+                $('#EmployeeAttachmentsModal').modal('show');
+            },
+            error: function (res) {
+                toastr.error(res.responseJSON.error.message, '@L("Error")');
+            }
+        });
+    }
+
+    function openTaskCompleteModal(id) {
+        $.ajax({
+            type: 'GET',
+            url: "@Url.Action("SetCompleteModal","DailyTask")" + "/" + id,
+            success: function (data) {
+                $('#TaskCompleteModal .modal-content').html(data);
+                $('#TaskCompleteModal').modal('show');
+            },
+            error: function (res) {
+                toastr.error(res.responseJSON.error.message, '@L("Error")');
+            }
+        });
+    }
+
+    function setDailyTaskStatusCompleted() {
+        var _$form = $('form[name="taskCompleteForm"]');
+        abp.ui.setBusy(_$form);
+
+        // Using FormData to handle file uploads
+        var formData = new FormData(_$form[0]);
+
+        $.ajax({
+            type: "POST",
+            url: "@Url.Action("SetDailyTaskStatusCompleted", "DailyTask")",
+            contentType: false, // Set to false for FormData
+            processData: false, // Set to false for FormData
+            data: formData,
+            success: function (res) {
+                abp.ui.clearBusy(_$form);
+                toastr.success(res.result, '@L("Success")');
+                $('#TaskCompleteModal').modal('hide');
+                getAll();
+            },
+            error: function (res) {
+                toastr.error(res.responseJSON.error.message, '@L("Error")');
+            }
+        });
+    }
+
+</script>

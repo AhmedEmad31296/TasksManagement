@@ -1,0 +1,24 @@
+﻿@model int;
+<div class="modal-header">
+    <h6 class="modal-title" id="myModalLabel35">@L("DailyTask.EmployeeNoteAttachments") </h6>
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+        <span aria-hidden="true"><i class="ft-x font-medium-2 text-bold-700"></i></span>
+    </button>
+</div>
+<form name="taskCompleteForm" role="form" class="form-horizontal">
+    <div class="modal-body">
+        <input type="hidden" name="Id" value="@Model" />
+        <fieldset class="form-group floating-label-form-group">
+            <label for="attachments">@L("MediaFile.Attachments")</label>
+            <input type="file" class="form-control-file" multiple id="Attachments" name="Attachments">
+        </fieldset>
+        <fieldset class="form-group floating-label-form-group">
+            <label for="comment">@L("Note")</label>
+            <textarea class="form-control" id="Note" name="Note" placeholder="@L("Note")"></textarea>
+        </fieldset>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn bg-light-success" onclick="setDailyTaskStatusCompleted()">@L("Save")</button>
+        <button type="reset" class="btn bg-light-secondary" data-dismiss="modal">@L("Cancel")</button>
+    </div>
+</form>
