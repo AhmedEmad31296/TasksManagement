@@ -212,8 +212,9 @@
 		<text name="DailyTask.TaskStatus" value="حالة المهمة" />
 		<text name="DailyTask.Total" value="إجمالي المهام" />
 		<text name="DailyTask.NotStarted" value="لم يبدأ" />
-		<text name="DailyTask.InProgress" value="في تَقَدم" />
+		<text name="DailyTask.InProgress" value="متقدم" />
 		<text name="DailyTask.Completed" value="مكتمل" />
+		<text name="DailyTask.Overstaying" value="متجاوز المدة" />
 		
 	</texts>
 </localizationDictionary>

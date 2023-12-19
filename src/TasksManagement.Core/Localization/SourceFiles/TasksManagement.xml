@@ -215,6 +215,7 @@
 		<text name="DailyTask.NotStarted" value="Not Started" />		
 		<text name="DailyTask.InProgress" value="In Progress" />		
 		<text name="DailyTask.Completed" value="Completed" />		
+		<text name="DailyTask.Overstaying" value="Overstaying" />		
 		
 	</texts>
 </localizationDictionary>

@@ -11,5 +11,6 @@ namespace TasksManagement.Common
         InProgress = 0,
         NotStarted = 1,
         Completed = 2,
+        Overstaying = 3,
     }
 }

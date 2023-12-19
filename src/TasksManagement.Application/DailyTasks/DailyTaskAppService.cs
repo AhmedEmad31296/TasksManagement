@@ -47,7 +47,7 @@ namespace TasksManagement.DailyTasks
 
         public async Task<DatatableFilterdDto<DailyTaskPagedDto>> GetPaged(FilterDailyTaskPagedInput input)
         {
-            await SetInProgressAfterStartEntryDate();
+            await ChangeTaskStatus();
             bool isCurrentUserAdmin = await IsCurrentUserAdmin();
 
             IQueryable<DailyTask> query = _DailyTaskRepository.GetAll().Where(e => !e.IsDeleted)
@@ -104,6 +104,7 @@ namespace TasksManagement.DailyTasks
             if (dailyTaskIsExisting)
                 throw new UserFriendlyException(L("DailyTask.IsAlreadyExisting"));
 
+
             DailyTask dailyTask = new()
             {
                 Name = input.Name,
@@ -111,8 +112,13 @@ namespace TasksManagement.DailyTasks
                 EntryDate = input.EntryDate,
                 DeadLine = input.DeadLine,
                 EmployeeId = input.EmployeeId,
-                TaskStatus = input.EntryDate < DateTime.Now ? Common.DailyTaskStatus.NotStarted : Common.DailyTaskStatus.InProgress
             };
+            if (DateTime.Now >= input.DeadLine)
+                dailyTask.TaskStatus = Common.DailyTaskStatus.Overstaying;
+            else if (DateTime.Now >= input.EntryDate)
+                dailyTask.TaskStatus = Common.DailyTaskStatus.InProgress;
+            else
+                dailyTask.TaskStatus = Common.DailyTaskStatus.NotStarted;
 
             await _DailyTaskRepository.InsertAsync(dailyTask);
             return L("SavedSuccessfully");
@@ -131,7 +137,13 @@ namespace TasksManagement.DailyTasks
             dailyTask.EntryDate = input.EntryDate;
             dailyTask.DeadLine = input.DeadLine;
             dailyTask.EmployeeId = input.EmployeeId;
-            dailyTask.TaskStatus = input.EntryDate < DateTime.Now ? Common.DailyTaskStatus.NotStarted : Common.DailyTaskStatus.InProgress;
+            if (DateTime.Now >= input.DeadLine)
+                dailyTask.TaskStatus = Common.DailyTaskStatus.Overstaying;
+            else if (DateTime.Now >= input.EntryDate)
+                dailyTask.TaskStatus = Common.DailyTaskStatus.InProgress;
+            else
+                dailyTask.TaskStatus = Common.DailyTaskStatus.NotStarted;
+
             await _DailyTaskRepository.UpdateAsync(dailyTask);
 
             return L("UpdatedSuccessfully");
@@ -251,17 +263,21 @@ namespace TasksManagement.DailyTasks
                 .ToListAsync();
             return statistics;
         }
-        async Task SetInProgressAfterStartEntryDate()
+        async Task ChangeTaskStatus()
         {
             List<DailyTask> dailyTasks = await _DailyTaskRepository
                 .GetAll()
-                .Where(x => DateTime.Now.Date >= x.EntryDate.Date && x.TaskStatus == Common.DailyTaskStatus.NotStarted)
+                .Where(x => (DateTime.Now.Date >= x.EntryDate.Date && x.TaskStatus == Common.DailyTaskStatus.NotStarted) || (DateTime.Now.Date >= x.DeadLine.Date && x.TaskStatus == Common.DailyTaskStatus.Overstaying))
                 .ToListAsync();
 
             if (dailyTasks.Count > 0)
                 foreach (var dt in dailyTasks)
                 {
-                    dt.TaskStatus = Common.DailyTaskStatus.InProgress;
+                    if (DateTime.Now >= dt.DeadLine)
+                        dt.TaskStatus = Common.DailyTaskStatus.Overstaying;
+                    else if (DateTime.Now >= dt.EntryDate)
+                        dt.TaskStatus = Common.DailyTaskStatus.InProgress;
+
                     await _DailyTaskRepository.UpdateAsync(dt);
                 }
         }
