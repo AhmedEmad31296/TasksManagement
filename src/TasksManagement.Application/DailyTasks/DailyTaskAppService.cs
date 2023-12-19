@@ -47,7 +47,7 @@ namespace TasksManagement.DailyTasks
 
         public async Task<DatatableFilterdDto<DailyTaskPagedDto>> GetPaged(FilterDailyTaskPagedInput input)
         {
-            await ChangeTaskStatus();
+            ChangeTaskStatus();
             bool isCurrentUserAdmin = await IsCurrentUserAdmin();
 
             IQueryable<DailyTask> query = _DailyTaskRepository.GetAll().Where(e => !e.IsDeleted)
@@ -263,12 +263,12 @@ namespace TasksManagement.DailyTasks
                 .ToListAsync();
             return statistics;
         }
-        async Task ChangeTaskStatus()
+        void ChangeTaskStatus()
         {
-            List<DailyTask> dailyTasks = await _DailyTaskRepository
+            List<DailyTask> dailyTasks = _DailyTaskRepository
                 .GetAll()
                 .Where(x => (DateTime.Now.Date >= x.EntryDate.Date || DateTime.Now.Date >= x.DeadLine.Date) && x.TaskStatus != Common.DailyTaskStatus.Completed)
-                .ToListAsync();
+                .ToList();
 
             if (dailyTasks.Count > 0)
                 foreach (var dt in dailyTasks)
@@ -278,7 +278,7 @@ namespace TasksManagement.DailyTasks
                     else if (DateTime.Now >= dt.EntryDate)
                         dt.TaskStatus = Common.DailyTaskStatus.InProgress;
 
-                    await _DailyTaskRepository.UpdateAsync(dt);
+                    _DailyTaskRepository.Update(dt);
                 }
         }
 
