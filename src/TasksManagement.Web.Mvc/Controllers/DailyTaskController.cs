@@ -9,6 +9,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 
+using TasksManagement.Authorization;
 using TasksManagement.Controllers;
 using TasksManagement.DailyTasks;
 using TasksManagement.DailyTasks.Dto;
@@ -17,7 +18,7 @@ using TasksManagement.Users;
 
 namespace TasksManagement.Web.Controllers
 {
-    [AbpMvcAuthorize]
+    [AbpMvcAuthorize(PermissionNames.Pages_DailyTasks)]
     public class DailyTaskController : TasksManagementControllerBase
     {
         private readonly IDailyTaskAppService _IDailyTaskAppService;

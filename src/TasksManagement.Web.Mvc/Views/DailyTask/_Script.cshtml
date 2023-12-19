@@ -79,13 +79,13 @@
                             if (data >= 0) {
                                 switch (data) {
                                     case 0:
-                                        return '<span class="badge bg-light-danger mb-1 mr-2">@L("DailyTask."+nameof(DailyTaskStatus.InProgress))</span>';
+                                        return '<span class="badge bg-light-info mb-1 mr-2">@L("DailyTask."+nameof(DailyTaskStatus.InProgress))</span>';
                                     case 1:
                                         return '<span class="badge bg-light-warning mb-1 mr-2">@L("DailyTask."+nameof(DailyTaskStatus.NotStarted))</span>';
                                     case 2:
                                         return '<span class="badge bg-light-success mb-1 mr-2">@L("DailyTask."+nameof(DailyTaskStatus.Completed))</span>';
                                     case 3:
-                                        return '<span class="badge bg-light-secondary mb-1 mr-2">@L("DailyTask."+nameof(DailyTaskStatus.Overstaying))</span>';
+                                        return '<span class="badge bg-light-danger mb-1 mr-2">@L("DailyTask."+nameof(DailyTaskStatus.Overstaying))</span>';
                                     default:
                                         return '';
                                 }

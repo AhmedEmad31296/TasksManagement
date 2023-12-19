@@ -1,4 +1,5 @@
-﻿<div class="app-sidebar menu-fixed" data-background-color="success" data-image="img/sidebar-bg/01.jpg" data-scroll-to-active="true">
+﻿@using TasksManagement.Authorization;
+<div class="app-sidebar menu-fixed" data-background-color="success" data-image="img/sidebar-bg/01.jpg" data-scroll-to-active="true">
     <!-- main menu header-->
     <!-- Sidebar Header starts-->
     @await Html.PartialAsync("_SideBar.Logo.cshtml")
@@ -14,21 +15,30 @@
                         <i class="fa fa-home"></i><span class="menu-title">@L("HomePage")</span>
                     </a>
                 </li>
-                <li class="nav-item">
-                    <a asp-controller="DailyTask" asp-action="Index">
-                        <i class="fa fa-tasks"></i><span class="menu-title">@L("DailyTask.Title")</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a asp-controller="Users" asp-action="Index">
-                        <i class="fa fa-users"></i><span class="menu-title">@L("Users")</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a asp-controller="Roles" asp-action="Index">
-                        <i class="fa fa-universal-access"></i><span class="menu-title">@L("Roles")</span>
-                    </a>
-                </li>
+                @if (PermissionChecker.IsGranted(PermissionNames.Pages_DailyTasks))
+                {
+                    <li class="nav-item">
+                        <a asp-controller="DailyTask" asp-action="Index">
+                            <i class="fa fa-tasks"></i><span class="menu-title">@L("DailyTask.Title")</span>
+                        </a>
+                    </li>
+                }
+                @if (PermissionChecker.IsGranted(PermissionNames.Pages_Users))
+                {
+                    <li class="nav-item">
+                        <a asp-controller="Users" asp-action="Index">
+                            <i class="fa fa-users"></i><span class="menu-title">@L("Users")</span>
+                        </a>
+                    </li>
+                }
+                @if (PermissionChecker.IsGranted(PermissionNames.Pages_Roles))
+                {
+                    <li class="nav-item">
+                        <a asp-controller="Roles" asp-action="Index">
+                            <i class="fa fa-universal-access"></i><span class="menu-title">@L("Roles")</span>
+                        </a>
+                    </li>
+                }
             </ul>
         </div>
     </div>

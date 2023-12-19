@@ -13,7 +13,7 @@ using System;
 
 namespace TasksManagement.Web.Controllers
 {
-    [AbpMvcAuthorize]
+    [AbpMvcAuthorize(PermissionNames.Pages_Roles)]
     public class RolesController : TasksManagementControllerBase
     {
         private readonly IRoleAppService _roleAppService;

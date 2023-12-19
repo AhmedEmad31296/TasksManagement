@@ -204,6 +204,7 @@
 		<text name="DailyTask.EntryDate" value="Entry Date" />
 		<text name="DailyTask.DeadLine" value="Dead Line" />
 		<text name="DailyTask.DaysLeft" value="Days Left" />
+		<text name="DailyTask.Employees" value="Employees" />
 		<text name="DailyTask.EmployeeName" value="Employee Name" />
 		<text name="DailyTask.EmployeeNoteAttachments" value="Employee Note And Attachments" />
 		<text name="DailyTask.IsAlreadyExisting" value="Daily Task Is Already Existing" />

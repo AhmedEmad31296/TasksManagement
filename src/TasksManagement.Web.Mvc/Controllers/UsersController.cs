@@ -15,7 +15,7 @@ using TasksManagement.Roles.Dto;
 
 namespace TasksManagement.Web.Controllers
 {
-    [AbpMvcAuthorize]
+    [AbpMvcAuthorize(PermissionNames.Pages_Users)]
     public class UsersController : TasksManagementControllerBase
     {
         private readonly IUserAppService _userAppService;

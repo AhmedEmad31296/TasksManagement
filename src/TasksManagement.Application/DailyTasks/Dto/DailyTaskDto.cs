@@ -68,11 +68,18 @@ namespace TasksManagement.DailyTasks.Dto
     }
     public class GetStatisticsDto
     {
-        public List<GetTaskStatusStatisticsDto> TaskStatusStatistics { get; set; }
+        public List<TaskStatusStatisticsDto> TaskStatusStatistics { get; set; }
+        public List<EmployeeStatisticsDto> EmployeesStatistics { get; set; }
     }
-    public class GetTaskStatusStatisticsDto
+    public class TaskStatusStatisticsDto
     {
         public DailyTaskStatus TaskStatus { get; set; }
+        public int Total { get; set; }
+        public double Percentage { get; set; }
+    }
+    public class EmployeeStatisticsDto
+    {
+        public string Employee { get; set; }
         public int Total { get; set; }
         public double Percentage { get; set; }
     }

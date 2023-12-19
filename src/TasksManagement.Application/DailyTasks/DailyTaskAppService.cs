@@ -228,6 +228,7 @@ namespace TasksManagement.DailyTasks
             GetStatisticsDto statistics = new()
             {
                 TaskStatusStatistics = await GetDailyTasksStatistics(),
+                EmployeesStatistics = await GetEmployeesStatistics(),
             };
             return statistics;
         }
@@ -244,16 +245,16 @@ namespace TasksManagement.DailyTasks
             return false;
         }
 
-        async Task<List<GetTaskStatusStatisticsDto>> GetDailyTasksStatistics()
+        async Task<List<TaskStatusStatisticsDto>> GetDailyTasksStatistics()
         {
             int totalTasksCount = await _DailyTaskRepository.GetAll().CountAsync(e => !e.IsDeleted);
             bool isCurrentUserAdmin = await IsCurrentUserAdmin();
 
-            List<GetTaskStatusStatisticsDto> statistics = await _DailyTaskRepository.GetAll()
+            List<TaskStatusStatisticsDto> statistics = await _DailyTaskRepository.GetAll()
                 .Where(e => !e.IsDeleted)
                 .WhereIf(!isCurrentUserAdmin, x => x.EmployeeId == AbpSession.UserId)
                 .GroupBy(e => e.TaskStatus)
-                .Select(e => new GetTaskStatusStatisticsDto
+                .Select(e => new TaskStatusStatisticsDto
                 {
                     TaskStatus = e.Key,
                     Total = e.Count(),
@@ -261,6 +262,22 @@ namespace TasksManagement.DailyTasks
                 })
                 .OrderBy(c => c.TaskStatus)
                 .ToListAsync();
+            return statistics;
+        }
+        async Task<List<EmployeeStatisticsDto>> GetEmployeesStatistics()
+        {
+            int totalEmployeesCount = await _DailyTaskRepository.GetAll().CountAsync();
+
+            List<EmployeeStatisticsDto> statistics = await _DailyTaskRepository.GetAll()
+                .GroupBy(e => e.Employee.UserName)
+                .Select(e => new EmployeeStatisticsDto
+                {
+                    Employee = e.Key,
+                    Total = e.Count(),
+                    Percentage = ((double)e.Count() / totalEmployeesCount) * 100
+                })
+                .ToListAsync();
+
             return statistics;
         }
         void ChangeTaskStatus()

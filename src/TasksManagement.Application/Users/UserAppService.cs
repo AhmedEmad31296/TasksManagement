@@ -27,7 +27,7 @@ using System.Linq.Dynamic.Core;
 
 namespace TasksManagement.Users
 {
-    [AbpAuthorize(PermissionNames.Pages_Users)]
+    [AbpAuthorize]
     public class UserAppService : AsyncCrudAppService<User, UserDto, long, PagedUserResultRequestDto, CreateUserDto, UserDto>, IUserAppService
     {
         private readonly UserManager _userManager;
@@ -123,37 +123,25 @@ namespace TasksManagement.Users
 
         public override async Task<UserDto> CreateAsync(CreateUserDto input)
         {
-
             CheckCreatePermission();
 
             var user = ObjectMapper.Map<User>(input);
 
             user.TenantId = AbpSession.TenantId;
             user.IsEmailConfirmed = true;
-            try
+
+            await _userManager.InitializeOptionsAsync(AbpSession.TenantId);
+
+            CheckErrors(await _userManager.CreateAsync(user, input.Password));
+
+            if (input.RoleNames != null)
             {
-                await _userManager.InitializeOptionsAsync(AbpSession.TenantId);
-
-
-                var output = await _userManager.CreateAsync(user, input.Password);
-
-                //CheckErrors(await _userManager.CreateAsync(user, input.Password));
-
-                CurrentUnitOfWork.SaveChanges();
-
-                if (input.RoleNames != null)
-                {
-                    CheckErrors(await _userManager.SetRolesAsync(user, input.RoleNames));
-                }
-
-                CurrentUnitOfWork.SaveChanges();
-
-                return MapToEntityDto(user);
+                CheckErrors(await _userManager.SetRolesAsync(user, input.RoleNames));
             }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
+
+            CurrentUnitOfWork.SaveChanges();
+
+            return MapToEntityDto(user);
         }
 
         public override async Task<UserDto> UpdateAsync(UserDto input)

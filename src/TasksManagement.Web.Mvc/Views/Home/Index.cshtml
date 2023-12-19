@@ -1,10 +1,12 @@
-﻿@using TasksManagement.Common;
+﻿@using TasksManagement.Authorization;
+@using TasksManagement.Common;
 @using TasksManagement.DailyTasks.Dto;
 
 @model GetStatisticsDto;
 
 <div class="row">
-    <div class="col-xl-3 col-lg-6 col-md-6 col-12">
+    <div class="col-xl-1 col-lg-6 col-md-6 col-12"></div>
+    <div class="col-xl-2 col-lg-6 col-md-6 col-12">
         <div class="card gradient-mint">
             <div class="card-content">
                 <div class="card-body py-0">
@@ -25,7 +27,7 @@
     </div>
     @foreach (var item in Model.TaskStatusStatistics)
     {
-        <div class="col-xl-3 col-lg-6 col-md-6 col-12">
+        <div class="col-xl-2 col-lg-6 col-md-6 col-12">
             <div class="card gradient-mint">
                 <div class="card-content">
                     <div class="card-body py-0">
@@ -45,9 +47,10 @@
             </div>
         </div>
     }
+    <div class="col-xl-1 col-lg-6 col-md-6 col-12"></div>
 </div>
 <div class="row match-height">
-    <div class="col-xl-12 col-12">
+    <div class="col-xl-6 col-12">
         <div class="card">
             <div class="card-header">
                 <h4 class="card-title">@L("DailyTask.TaskStatus")</h4>
@@ -57,7 +60,7 @@
                     <div class="row">
                         @foreach (var item in Model.TaskStatusStatistics)
                         {
-                            <div class="col-4 mb-5">
+                            <div class="col-6 mb-5">
                                 <span class="mb-1 text-muted d-block">@Math.Round(item.Percentage, 2)% - @(L("DailyTask." + item.TaskStatus.ToString()))</span>
                                 <div class="progress" style="height: 5px;">
                                     <div class="progress-bar bg-info" role="progressbar" style="width: @((int)item.Percentage)%;" aria-valuenow="@((int)item.Percentage)" aria-valuemin="0" aria-valuemax="100"></div>
@@ -69,4 +72,28 @@
             </div>
         </div>
     </div>
+    @if (PermissionChecker.IsGranted(PermissionNames.Pages_Users))
+    {
+        <div class="col-xl-6 col-lg-12">
+            <div class="card">
+                <div class="card-content">
+                    <div class="card-body">
+                        <h4 class="card-title mb-4">
+                            <span class="">@L("DailyTask.Employees")</span>
+                        </h4>
+                        <ul class="list-group mb-3">
+                            @foreach (var item in Model.EmployeesStatistics)
+                            {
+                                <li class="list-group-item">
+                                    <span>@item.Employee</span>
+                                    <span class="badge bg-light-info float-right">@item.Total</span>
+                                </li>
+                            }
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
 </div>

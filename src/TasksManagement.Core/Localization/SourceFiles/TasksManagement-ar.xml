@@ -203,6 +203,7 @@
 		<text name="DailyTask.EntryDate" value="تاريخ البداية" />
 		<text name="DailyTask.DeadLine" value="موعد التسليم" />
 		<text name="DailyTask.DaysLeft" value="ايام متبقية" />
+		<text name="DailyTask.Employees" value="الموظفين" />
 		<text name="DailyTask.EmployeeName" value="اسم الموظف" />
 		<text name="DailyTask.EmployeeNoteAttachments" value="ملاحظات ومرفقات الموظف" />
 		<text name="DailyTask.IsAlreadyExisting" value="مهمة يومية موجوده موجودة من قبل" />
