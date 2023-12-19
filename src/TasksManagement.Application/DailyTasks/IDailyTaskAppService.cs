@@ -16,7 +16,7 @@ namespace TasksManagement.DailyTasks
         Task<string> Insert(InsertDailyTaskInput input);
         Task<string> Update(UpdateDailyTaskInput input);
         Task<string> SetDailyTaskStatusCompleted([FromForm] SetDailyTaskStatusCompletedInput input);
-        Task<GetFullInfoDailyTaskDto> Get(int id);
+        GetFullInfoDailyTaskDto Get(int id);
         Task<List<UpdatedDailyTaskAttachmentDto>> GetUpdatedDailyTaskAttachments(int id);
         Task<string> Delete(int id);
         Task<GetStatisticsDto> GetStatistics();

@@ -64,8 +64,8 @@ namespace TasksManagement.Web.Controllers
         [HttpGet]
         public async Task<ActionResult> EditModal(int id)
         {
-            var result = await _IDailyTaskAppService.Get(id);
             var employees = await _IUserAppService.GetEmployees();
+            var result = _IDailyTaskAppService.Get(id);
             ViewData["Employees"] = new SelectList(employees, "Id", "Name", result.EmployeeId);
             return PartialView("_EditModal", result);
         }

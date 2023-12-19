@@ -81,7 +81,7 @@ namespace TasksManagement.DailyTasks
                     DeadLine = b.DeadLine,
                     EntryDate = b.EntryDate,
                     EmployeeName = b.Employee.FullName,
-                    DaysLeft = (int)(b.DeadLine - b.EntryDate).TotalDays,
+                    DaysLeft = (int)(b.DeadLine - DateTime.Now).TotalDays,
                     HasUpdatedDailyTask = b.UpdatedDailyTask.Any()
                 })
                 //.Skip((input.Page - 1) * input.PageSize)
@@ -181,13 +181,13 @@ namespace TasksManagement.DailyTasks
             }
             return L("UpdatedSuccessfully");
         }
-        public async Task<GetFullInfoDailyTaskDto> Get(int id)
+        public GetFullInfoDailyTaskDto Get(int id)
         {
-            DailyTask dailyTask = await _DailyTaskRepository.GetAll()
+            DailyTask dailyTask = _DailyTaskRepository.GetAll()
                .Where(x => x.Id == id)
-               .FirstOrDefaultAsync() ?? throw new UserFriendlyException(L("DailyTask.IsNotExisting"));
+               .FirstOrDefault() ?? throw new UserFriendlyException(L("DailyTask.IsNotExisting"));
 
-            GetFullInfoDailyTaskDto entity = await _DailyTaskRepository.GetAll()
+            GetFullInfoDailyTaskDto entity = _DailyTaskRepository.GetAll()
                                                                 .Where(e => e.Id == id)
                                                                 .Select(e => new GetFullInfoDailyTaskDto
                                                                 {
@@ -198,7 +198,7 @@ namespace TasksManagement.DailyTasks
                                                                     DeadLine = e.DeadLine,
                                                                     EmployeeId = e.EmployeeId,
                                                                     TaskStatus = e.TaskStatus,
-                                                                }).FirstOrDefaultAsync();
+                                                                }).FirstOrDefault();
             return entity;
         }
         public async Task<List<UpdatedDailyTaskAttachmentDto>> GetUpdatedDailyTaskAttachments(int id)
@@ -267,7 +267,7 @@ namespace TasksManagement.DailyTasks
         {
             List<DailyTask> dailyTasks = await _DailyTaskRepository
                 .GetAll()
-                .Where(x => (DateTime.Now.Date >= x.EntryDate.Date && x.TaskStatus == Common.DailyTaskStatus.NotStarted) || (DateTime.Now.Date >= x.DeadLine.Date && x.TaskStatus == Common.DailyTaskStatus.Overstaying))
+                .Where(x => (DateTime.Now.Date >= x.EntryDate.Date || DateTime.Now.Date >= x.DeadLine.Date) && x.TaskStatus != Common.DailyTaskStatus.Completed)
                 .ToListAsync();
 
             if (dailyTasks.Count > 0)
